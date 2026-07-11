@@ -10,3 +10,4 @@ python-dotenv
 pypdf
 ibm-watsonx-ai
 deep-translator
+langdetect
