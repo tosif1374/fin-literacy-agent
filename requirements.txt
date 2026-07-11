@@ -1,0 +1,12 @@
+streamlit
+fastapi
+uvicorn
+requests
+chromadb
+sentence-transformers
+langchain
+langchain-community
+python-dotenv
+pypdf
+ibm-watsonx-ai
+deep-translator

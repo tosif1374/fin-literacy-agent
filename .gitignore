@@ -1,0 +1,78 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Environment Variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Streamlit
+.streamlit/
+
+# VS Code
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Build Files
+build/
+dist/
+*.egg-info/
+
+# ChromaDB
+data/chroma_db/
+chroma_db/
+*.sqlite3
+
+# Cached Models
+.cache/
+huggingface/
+models/
+
+# Test Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary Files
+*.tmp
+*.temp
+
+# IBM Credentials
+apikey.txt
+credentials.json
+service-account.json
+
+# Runtime Files
+*.pid
+
+# Docker
+docker-compose.override.yml
+
+# Streamlit Secrets
+.streamlit/secrets.toml
+
+# Data Files (optional if large)
+# data/raw/*.pdf
+# data/chunks.json
+
+# IDE
+.idea/
+
+# Mac/Linux
+*.swp
+*.swo
