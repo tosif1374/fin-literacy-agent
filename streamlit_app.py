@@ -1,12 +1,24 @@
-# ui/streamlit_app.py
+# streamlit_app.py
 
 import streamlit as st
-import requests
+
+from app.retriever import retrieve, contains_pii_request
+from app.llm import generate_answer
+from app.translate import (
+    detect_language,
+    to_english,
+    from_english,
+)
 
 st.set_page_config(
     page_title="Digital Financial Literacy Agent",
-    page_icon="💰"
+    page_icon="💰",
 )
+
+SCAM_SAFETY_MESSAGE = """
+Never share OTPs, UPI PINs, CVV numbers, passwords, or bank account credentials.
+If you suspect fraud, contact your bank immediately and report the incident to the National Cyber Crime Portal.
+"""
 
 st.title("💰 Digital Financial Literacy Agent")
 st.caption(
@@ -16,34 +28,47 @@ st.caption(
 query = st.text_input("Your question")
 
 if st.button("Ask") and query:
+
     with st.spinner("Thinking..."):
 
         try:
-            response = requests.post(
-                "http://localhost:8000/ask",
-                json={"question": query},
-                timeout=120
+            lang = detect_language(query)
+
+            if contains_pii_request(query):
+                st.warning(SCAM_SAFETY_MESSAGE)
+                st.stop()
+
+            question_en = to_english(query, lang)
+
+            results = retrieve(question_en)
+
+            context_chunks = [doc for doc, _ in results]
+
+            answer_en = generate_answer(
+                question_en,
+                context_chunks
             )
 
-            st.write("Status Code:", response.status_code)
+            answer = from_english(
+                answer_en,
+                lang
+            )
 
-            if response.status_code != 200:
-                st.error("API Error")
-                st.code(response.text)
-            else:
-                resp = response.json()
+            st.success("Response received")
 
-                st.success("Response received")
+            st.markdown("### Answer")
+            st.write(answer)
 
-                st.write("### Answer")
-                st.write(resp.get("answer", "No answer returned"))
+            if results:
+                st.markdown("### Sources")
 
-                if resp.get("sources"):
-                    st.markdown("### Sources")
-                    for s in resp["sources"]:
-                        st.markdown(
-                            f"- [{s['source']}]({s['url']})"
-                        )
+                for _, meta in results:
+                    source = meta.get("source", "Unknown")
+                    url = meta.get("url", "#")
+
+                    st.markdown(
+                        f"- [{source}]({url})"
+                    )
 
         except Exception as e:
-            st.error(f"Request failed: {str(e)}")
+            st.error(f"Error: {str(e)}")
